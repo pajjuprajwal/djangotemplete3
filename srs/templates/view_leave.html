@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Leave Records</title>
+    <style>
+        /* Add some styling for better appearance */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        /* Style for Edit and Delete buttons */
+        .edit-btn, .delete-btn {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 5px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: 1px solid #4CAF50;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: #f44336; /* Red */
+            border: 1px solid #f44336;
+        }
+
+        /* Style for pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .page-link {
+            padding: 8px 12px;
+            margin: 5px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #3498db; /* Blue */
+            color: white;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .page-link:hover {
+            background-color: #2980b9; /* Darker Blue */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Leave Records</h1>
+
+    <form>
+        <label for="search_query">Search:</label>
+        <input type="text" name="search_query" id="search_query" oninput="filterTable()">
+    </form>
+
+    <table border="1" id="leaveTable">
+        <tr>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+        <!-- Your Django template loop here -->
+        <!-- Replace the Django template syntax with actual data -->
+        <!-- For example: -->
+        <!-- {% for leave in leaves %} -->
+        <tr>
+            <td>{{ leave.leave_type }}</td>
+            <td>{{ leave.start_date|date:"d-m-y" }}</td>
+            <td>{{ leave.end_date|date:"d-m-y" }}</td>
+            <td>{{ leave.description }}</td>
+            <td>
+                <a href="{% url 'update_view_leave' leave.id %}" class="edit-btn">Edit</a>
+                <a href="{% url 'delete_leave' leave.id %}" class="delete-btn">Delete</a>
+            </td>
+        </tr>
+        <!-- {% endfor %} -->
+    </table>
+
+    <div class="pagination" id="pagination">
+        <a href="#" class="page-link" onclick="changePage(-1)">Previous</a>
+        <span id="currentPage" style="margin: 0 10px;"></span>
+        <a href="#" class="page-link" onclick="changePage(1)">Next</a>
+    </div>
+
+    <script>
+        var pageSize = 5; // Number of items per page
+        var currentPage = 1;
+
+        function updatePagination() {
+            var table = document.getElementById("leaveTable");
+            var totalItems = table.getElementsByTagName("tr").length - 1; // Subtracting 1 for the header row
+            var totalPages = Math.ceil(totalItems / pageSize);
+
+            document.getElementById("currentPage").textContent = "Page " + currentPage + " of " + totalPages;
+
+            document.getElementById("prevBtn").disabled = currentPage === 1;
+            document.getElementById("nextBtn").disabled = currentPage === totalPages;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+
+            updateTable();
+            updatePagination();
+        }
+
+        function updateTable() {
+            var table = document.getElementById("leaveTable");
+            var tr = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < tr.length; i++) {
+                if (i >= (currentPage - 1) * pageSize + 1 && i <= currentPage * pageSize) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        function filterTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search_query");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("leaveTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+                td = tr[i].getElementsByTagName("td")[0]; // Assuming you want to filter based on the first column
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+
+            currentPage = 1; // Reset to the first page when filtering
+            updateTable();
+            updatePagination();
+        }
+
+        // Initial setup
+        updateTable();
+        updatePagination();
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Leave</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px; /* Adjust as needed */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Update Leave</h1>
+        <form method="post" action="{% url 'update_view_leave' leave_id=leave.id %}">
+            {% csrf_token %}
+            
+            <label for="leave_type">Leave Type:</label>
+            <input type="text" id="leave_type" name="leave_type" value="{{ leave.leave_type }}" required>
+        
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" value="{{ leave.start_date|date:'Y-m-d' }}" required>
+        
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" value="{{ leave.end_date|date:'Y-m-d' }}" required>
+        
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" required>{{ leave.description }}</textarea>
+        
+            <button type="submit">Update</button>
+        </form>
+    </div>
+</body>    
+</html>
